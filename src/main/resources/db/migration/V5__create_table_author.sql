@@ -1,0 +1,22 @@
+-- Table: public.author
+
+-- DROP TABLE IF EXISTS public.author;
+
+CREATE TABLE IF NOT EXISTS public.author
+(
+    id uuid NOT NULL,
+    name character varying(255) COLLATE pg_catalog."default",
+    slug character varying(255) COLLATE pg_catalog."default",
+    user_image_id uuid,
+    CONSTRAINT author_pkey PRIMARY KEY (id),
+    CONSTRAINT uk_coj7jc9ay04i4aidkf7ajt4h8 UNIQUE (user_image_id),
+    CONSTRAINT fkepky0dedbeyvlr28p44ibh8v1 FOREIGN KEY (user_image_id)
+    REFERENCES public.user_image (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    )
+
+    TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.author
+    OWNER to postgres;

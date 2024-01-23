@@ -1,0 +1,22 @@
+INSERT INTO public.category (id, name, slug)
+VALUES
+    ('9a78ab52-7fc2-4b62-958d-4a8c28f4209d', 'Entretenimento', 'entretenimento'),
+    ('0978ca68-189f-4d5b-aeb9-7a9a8f13b26d', 'Educação', 'educacao'),
+    ('6f5a220a-6ff3-4d71-b3ee-9db24bf0a0f1', 'Estilo de Vida', 'estilo-de-vida'),
+    ('8d57d511-1f9b-45a1-99e5-4c48a8ee983d', 'Saúde e Bem-Estar', 'saude-e-bem-estar'),
+    ('a1e6a08e-6a8e-4167-809d-35c9d6d733c4', 'Música', 'musica'),
+    ('09eb0d23-482f-4b47-9d33-b4983d5c3a8e', 'Ciência e Tecnologia', 'ciencia-e-tecnologia'),
+    ('f47855ec-6565-4b07-9e89-dac9fb62ce23', 'Vlogs', 'vlogs'),
+    ('cba1ec54-c456-489b-8f97-1c5e47c03752', 'Notícias e Política', 'noticias-e-politica'),
+    ('8d8913a9-94d9-4299-8a77-2a5c28c2fe17', 'Automóveis', 'automoveis'),
+    ('5648e193-2163-4e6e-9e1f-bfc7ff84b146', 'Animais de Estimação', 'animais-de-estimacao'),
+    ('b90c8530-1229-4a33-9c7f-eb4e5b19de5b', 'Humor', 'humor'),
+    ('e4e021bc-cf9b-4cc5-91d1-7fc9c0c62a82', 'Negócios e Finanças', 'negocios-e-financas'),
+    ('bf41f155-73f5-46c9-b0a7-d268935fb99a', 'Alimentação', 'alimentacao'),
+    ('2fb5ed8e-dc89-4377-8e48-8eefea34d056', 'Arte e Cultura', 'arte-e-cultura'),
+    ('97a29fb4-833f-4f32-9883-7f72e9f9831b', 'Viagem', 'viagem'),
+    ('c2d8c498-3349-4913-9a32-ebd679dd130c', 'Família e Relacionamentos', 'familia-e-relacionamentos'),
+    ('4d2ff092-74a7-43e3-917f-c06e6ab587c4', 'Literatura', 'literatura'),
+    ('9da5eb1c-6752-4b6e-b0d1-d04010a1357e', 'Desenvolvimento Pessoal', 'desenvolvimento-pessoal'),
+    ('156e22e0-6015-4b7d-9a23-dbc17a582682', 'Reviews e Análises', 'reviews-e-analises'),
+    ('00c6346c-e3d4-41a2-90ef-146e6977fc0a', 'Esportes', 'esportes');

@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.util.UUID;
 
 @Entity
-@Table(name = "post")
+@Table(name = "user_image")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
