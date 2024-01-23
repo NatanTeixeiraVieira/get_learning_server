@@ -10,6 +10,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+@MappedSuperclass
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -19,11 +20,9 @@ public abstract class Auditable implements Serializable {
   private static final long serialVersionUID = 1L;
 
   @Temporal(TemporalType.TIMESTAMP)
-  @Column
   private LocalDateTime createdAt;
 
   @Temporal(TemporalType.TIMESTAMP)
-  @Column
   private LocalDateTime updatedAt;
 
   @PrePersist

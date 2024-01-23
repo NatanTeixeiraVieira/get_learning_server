@@ -5,6 +5,8 @@
 CREATE TABLE IF NOT EXISTS public.post
 (
     id uuid NOT NULL,
+    created_at timestamp(6) without time zone,
+    updated_at timestamp(6) without time zone,
     allow_comments boolean,
     content character varying(255) COLLATE pg_catalog."default",
     subtitle character varying(255) COLLATE pg_catalog."default",
@@ -15,12 +17,12 @@ CREATE TABLE IF NOT EXISTS public.post
     CONSTRAINT uk_4myhtiddgqubbsy8cb6on3qif UNIQUE (cover_image_id),
     CONSTRAINT fk5l759v7apba3lqguc7bp8h456 FOREIGN KEY (author_id)
     REFERENCES public.author (id) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION,
+                            ON UPDATE NO ACTION
+                            ON DELETE NO ACTION,
     CONSTRAINT fk6vg5yjtvxm32jf1xagenxgvbx FOREIGN KEY (cover_image_id)
     REFERENCES public.cover_image (id) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION
+                            ON UPDATE NO ACTION
+                            ON DELETE NO ACTION
     )
 
     TABLESPACE pg_default;
