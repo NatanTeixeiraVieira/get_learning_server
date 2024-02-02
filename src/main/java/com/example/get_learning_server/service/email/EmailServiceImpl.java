@@ -2,7 +2,6 @@ package com.example.get_learning_server.service.email;
 
 import com.example.get_learning_server.entity.Email;
 import com.example.get_learning_server.enums.EmailStatus;
-import com.example.get_learning_server.repository.EmailRepository;
 import jakarta.mail.internet.MimeMessage;
 import lombok.AllArgsConstructor;
 import org.springframework.mail.MailException;
@@ -15,9 +14,9 @@ import java.time.LocalDateTime;
 @Service
 @AllArgsConstructor
 public class EmailServiceImpl implements EmailService {
-  private final EmailRepository emailRepository;
   private final JavaMailSender emailSender;
 
+  @Override
   public Email sendEmail(Email email) {
     email.setEmailSendingDate(LocalDateTime.now());
     try {
@@ -35,7 +34,7 @@ public class EmailServiceImpl implements EmailService {
     } catch (MailException e) {
       email.setStatus(EmailStatus.ERROR);
     } finally {
-      return emailRepository.save(email);
+      return email;
     }
   }
 }

@@ -1,4 +1,4 @@
-package com.example.get_learning_server.dto.request.login;
+package com.example.get_learning_server.integration.dto.request.login;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

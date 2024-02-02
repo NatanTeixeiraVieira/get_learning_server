@@ -23,9 +23,9 @@ CREATE TABLE IF NOT EXISTS public.post
     REFERENCES public.cover_image (id) MATCH SIMPLE
                             ON UPDATE NO ACTION
                             ON DELETE NO ACTION
-    )
+    );
 
-    TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS public.post
-    OWNER to postgres;
+--     TABLESPACE pg_default;
+--
+-- ALTER TABLE IF EXISTS public.post
+--     OWNER to postgres;

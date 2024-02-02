@@ -2,7 +2,7 @@ package com.example.get_learning_server.service.auth;
 
 import com.example.get_learning_server.dto.request.login.LoginRequestDTO;
 import com.example.get_learning_server.dto.request.register.RegisterEmailVerificationRequestDTO;
-import com.example.get_learning_server.dto.request.register.RegisterRequestDTO;
+import com.example.get_learning_server.dto.request.register.RegisterConfirmEmailRequestDTO;
 import com.example.get_learning_server.dto.response.register.RegisterEmailVerificationResponseDTO;
 import com.example.get_learning_server.dto.response.login.LoginResponseDTO;
 import com.example.get_learning_server.dto.response.login.UserLoginResponseDTO;
@@ -19,7 +19,7 @@ import com.example.get_learning_server.repository.UserRepository;
 import com.example.get_learning_server.security.jwt.JwtTokenProvider;
 import com.example.get_learning_server.service.email.EmailServiceImpl;
 import com.example.get_learning_server.util.Constants;
-import com.example.get_learning_server.util.UtilMethods;
+import com.example.get_learning_server.util.MethodsUtil;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -37,7 +37,7 @@ import java.util.UUID;
 @Service
 @Data
 @EqualsAndHashCode
-public class AuthServiceImpl {
+public class AuthServiceImpl implements AuthService {
   private final AuthenticationManager authenticationManager;
   private final JwtTokenProvider tokenProvider;
   private final EmailServiceImpl emailService;
@@ -68,52 +68,19 @@ public class AuthServiceImpl {
     this.emailRepository = emailRepository;
   }
 
-  public LoginResponseDTO login(@Valid LoginRequestDTO authData) {
-    final var usernamePassword = new UsernamePasswordAuthenticationToken(authData.login(), authData.password());
-
-    authenticationManager.authenticate(usernamePassword);
-
-    return loginWithoutAuthentication(authData.login());
-  }
-
-  public LoginResponseDTO registerConfirmEmail(
-      @Valid RegisterRequestDTO registerRequestDTO,
-      String token) {
-//    if(!token.startsWith("Bearer ")) throw new InsufficientAuthenticationException("");
-//
-//    token = token.replace("Bearer ", "");
-
-    final String login = tokenProvider.validateVerificationEmailToken(token);
-
-    final User user = userRepository
-        .findByLogin(login)
-        .orElseThrow(() -> new BadCredentialsException("User not found"));
-
-    // TODO Create a custom exception
-    if(login == null) throw new RuntimeException();
-
-    final Email email = emailRepository.findById(registerRequestDTO.emailId()).get();
-    email.setVerification(EmailVerification.VERIFIED);
-    emailRepository.save(email);
-
-    user.setEnabled(true);
-    userRepository.save(user);
-
-    return loginWithoutAuthentication(user.getLogin());
-  }
-
+  @Override
   public RegisterEmailVerificationResponseDTO registerSendEmailVerification(
       @Valid RegisterEmailVerificationRequestDTO registerData) {
     final Optional<User> verifyLoginAlreadyExists = userRepository.findByLogin(registerData.login());
 
     // TODO create a custom exception for existing emails
-    if(verifyLoginAlreadyExists.isPresent()) throw new BadCredentialsException("Email já existe");
+    if (verifyLoginAlreadyExists.isPresent()) throw new BadCredentialsException("Email already exists");
 
     final String encryptedPassword = new BCryptPasswordEncoder().encode(registerData.password());
     final Role userRole = roleRepository.findByName(UserRoles.USER);
     final User user = new User(registerData.login(), encryptedPassword, userRole);
     final Author author = new Author();
-    final String authorSlug = UtilMethods.generateSlug(registerData.userName());
+    final String authorSlug = MethodsUtil.generateSlug(registerData.userName());
 
     author.setName(registerData.userName());
     author.setSlug(authorSlug);
@@ -129,19 +96,59 @@ public class AuthServiceImpl {
     email.setEmailFrom(emailFrom);
     email.setEmailTo(registerData.login());
     email.setSubject(Constants.confirmationEmailSubject);
-    email.setContent(UtilMethods.generateEmailConfirmationContent(emailId, registerData.userName(), baseUrl));
+    email.setContent(MethodsUtil.generateEmailConfirmationContent(registerData.userName(), baseUrl));
     email.setVerification(EmailVerification.NON_VERIFIED);
     email.setUser(user);
 
-    emailService.sendEmail(email);
+    Email emailSent = emailService.sendEmail(email);
+
+    emailRepository.save(emailSent);
 
     final String token = tokenProvider.generateVerificationEmailToken(user);
-    return new RegisterEmailVerificationResponseDTO(token);
+    return new RegisterEmailVerificationResponseDTO(token, emailId);
+  }
+
+  @Override
+  public LoginResponseDTO registerConfirmEmail(
+      @Valid RegisterConfirmEmailRequestDTO registerConfirmEmailRequestDTO,
+      String token) {
+    final String login = tokenProvider.validateVerificationEmailToken(token);
+
+    final User user = userRepository
+        .findByLogin(login)
+        .orElseThrow(() -> new BadCredentialsException("User not found"));
+
+    if (login == null) throw new BadCredentialsException("Invalid token");
+
+    final Email email = emailRepository
+        .findById(registerConfirmEmailRequestDTO.emailId())
+        .orElseThrow(() -> new BadCredentialsException(""));
+
+    email.setVerification(EmailVerification.VERIFIED);
+    emailRepository.save(email);
+
+    user.setEnabled(true);
+    userRepository.save(user);
+
+    return loginWithoutAuthentication(user.getLogin());
+  }
+
+  @Override
+  public LoginResponseDTO login(@Valid LoginRequestDTO authData) {
+    final var usernamePassword = new UsernamePasswordAuthenticationToken(authData.login(), authData.password());
+
+    authenticationManager.authenticate(usernamePassword);
+
+    return loginWithoutAuthentication(authData.login());
   }
 
   private LoginResponseDTO loginWithoutAuthentication(@jakarta.validation.constraints.Email @NotBlank String login) {
-    final User user = userRepository.findByLogin(login).orElseThrow(() -> new BadCredentialsException(""));
-    final Author author = authorRepository.findByUser(user).orElseThrow(() -> new BadCredentialsException(""));
+    final User user = userRepository
+        .findByLogin(login)
+        .orElseThrow(() -> new BadCredentialsException("Email not fount"));
+    final Author author = authorRepository
+        .findByUser(user)
+        .orElseThrow(() -> new BadCredentialsException("Author not found"));
 
     final String token = tokenProvider.generateAccessToken(user);
 

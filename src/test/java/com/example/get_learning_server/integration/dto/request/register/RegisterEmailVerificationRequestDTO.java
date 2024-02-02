@@ -1,4 +1,4 @@
-package com.example.get_learning_server.dto.request.register;
+package com.example.get_learning_server.integration.dto.request.register;
 
 import com.example.get_learning_server.util.Regex;
 import jakarta.validation.constraints.Email;

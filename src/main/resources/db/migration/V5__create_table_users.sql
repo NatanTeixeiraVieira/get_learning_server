@@ -15,9 +15,9 @@ CREATE TABLE IF NOT EXISTS public.users
     password character varying(255) COLLATE pg_catalog."default" NOT NULL,
     CONSTRAINT users_pkey PRIMARY KEY (id),
     CONSTRAINT uk_ow0gan20590jrb00upg3va2fn UNIQUE (login)
-    )
+    );
 
-    TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS public.users
-    OWNER to postgres;
+--     TABLESPACE pg_default;
+--
+-- ALTER TABLE IF EXISTS public.users
+--     OWNER to postgres;

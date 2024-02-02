@@ -10,9 +10,9 @@ CREATE TABLE IF NOT EXISTS public.category
     name character varying(255) COLLATE pg_catalog."default",
     slug character varying(255) COLLATE pg_catalog."default",
     CONSTRAINT category_pkey PRIMARY KEY (id)
-    )
+);
 
-    TABLESPACE pg_default;
+--     TABLESPACE pg_default;
 
-ALTER TABLE IF EXISTS public.category
-    OWNER to postgres;
+-- ALTER TABLE IF EXISTS public.category
+--     OWNER to postgres;

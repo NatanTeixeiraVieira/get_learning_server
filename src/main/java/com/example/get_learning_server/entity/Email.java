@@ -41,7 +41,9 @@ public class Email extends Auditable implements Serializable {
 
   private LocalDateTime emailSendingDate;
 
+  @Enumerated(EnumType.STRING)
   private EmailStatus status;
 
+  @Enumerated(EnumType.STRING)
   private EmailVerification verification;
 }

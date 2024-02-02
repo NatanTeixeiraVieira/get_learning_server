@@ -14,9 +14,9 @@ CREATE TABLE IF NOT EXISTS public.post_tag
     REFERENCES public.post (id) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION
-    )
+    );
 
-    TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS public.post_tag
-    OWNER to postgres;
+--     TABLESPACE pg_default;
+--
+-- ALTER TABLE IF EXISTS public.post_tag
+--     OWNER to postgres;

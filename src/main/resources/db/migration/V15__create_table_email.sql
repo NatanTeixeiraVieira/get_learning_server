@@ -11,20 +11,20 @@ CREATE TABLE IF NOT EXISTS public.email
     email_from character varying(255) COLLATE pg_catalog."default",
     email_sending_date timestamp(6) without time zone,
     email_to character varying(255) COLLATE pg_catalog."default",
-    status smallint,
+    status character varying(255) COLLATE pg_catalog."default",
     subject character varying(255) COLLATE pg_catalog."default",
-    verification smallint,
+    verification character varying(255) COLLATE pg_catalog."default",
     user_id uuid,
     CONSTRAINT email_pkey PRIMARY KEY (id),
     CONSTRAINT fkah6v1juek8jb9ycg8cldv15d6 FOREIGN KEY (user_id)
     REFERENCES public.users (id) MATCH SIMPLE
                             ON UPDATE NO ACTION
                             ON DELETE NO ACTION,
-    CONSTRAINT email_status_check CHECK (status >= 0 AND status <= 1),
-    CONSTRAINT email_verification_check CHECK (verification >= 0 AND verification <= 2)
+    CONSTRAINT email_status_check CHECK (status::text = ANY (ARRAY['SENT'::character varying, 'ERROR'::character varying]::text[])),
+    CONSTRAINT email_verification_check CHECK (verification::text = ANY (ARRAY['VERIFIED'::character varying, 'NON_VERIFIED'::character varying, 'UNVERIFIABLE'::character varying]::text[]))
     )
 
-    TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS public.email
-    OWNER to postgres;
+--     TABLESPACE pg_default;
+--
+-- ALTER TABLE IF EXISTS public.email
+--     OWNER to postgres;

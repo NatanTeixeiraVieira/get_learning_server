@@ -22,9 +22,9 @@ CREATE TABLE IF NOT EXISTS public.author
     REFERENCES public.users (id) MATCH SIMPLE
                             ON UPDATE NO ACTION
                             ON DELETE NO ACTION
-    )
+    );
 
-    TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS public.author
-    OWNER to postgres;
+--     TABLESPACE pg_default;
+--
+-- ALTER TABLE IF EXISTS public.author
+--     OWNER to postgres;
