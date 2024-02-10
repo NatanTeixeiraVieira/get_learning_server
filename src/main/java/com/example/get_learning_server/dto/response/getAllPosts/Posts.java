@@ -1,5 +1,6 @@
 package com.example.get_learning_server.dto.response.getAllPosts;
 
+import com.fasterxml.jackson.annotation.JsonRootName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class GetAllPostsDTO extends RepresentationModel<GetAllPostsDTO> {
+public class Posts extends RepresentationModel<Posts> {
   private UUID id;
   private String title;
   private String subtitle;

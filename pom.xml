@@ -21,6 +21,7 @@
         <rest-assured.version>5.4.0</rest-assured.version>
         <java-jwt.version>4.4.0</java-jwt.version>
         <mockito-inline.version>5.1.1</mockito-inline.version>
+        <firebase.version>9.2.0</firebase.version>
     </properties>
     <dependencies>
         <dependency>
@@ -52,7 +53,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.modelmapper</groupId>
+            <artifactId>modelmapper</artifactId>
+            <version>${modelmapper.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-hateoas</artifactId>
@@ -67,6 +72,11 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.firebase</groupId>
+            <artifactId>firebase-admin</artifactId>
+            <version>${firebase.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

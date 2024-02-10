@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,6 +31,8 @@ public class Post extends Auditable implements Serializable {
   private String title;
 
   private String subtitle;
+
+  private LocalDateTime postTime;
 
   @ManyToOne
   @JoinColumn(name = "author_id")

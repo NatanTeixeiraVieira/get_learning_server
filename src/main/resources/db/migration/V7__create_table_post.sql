@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS public.post
     updated_at timestamp(6) without time zone,
     allow_comments boolean,
     content character varying(255) COLLATE pg_catalog."default",
+    post_time timestamp(6) without time zone,
     subtitle character varying(255) COLLATE pg_catalog."default",
     title character varying(255) COLLATE pg_catalog."default",
     author_id uuid,
@@ -23,7 +24,7 @@ CREATE TABLE IF NOT EXISTS public.post
     REFERENCES public.cover_image (id) MATCH SIMPLE
                             ON UPDATE NO ACTION
                             ON DELETE NO ACTION
-    );
+    )
 
 --     TABLESPACE pg_default;
 --
