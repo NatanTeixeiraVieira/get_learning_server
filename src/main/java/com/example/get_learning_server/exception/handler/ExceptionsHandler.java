@@ -3,6 +3,7 @@ package com.example.get_learning_server.exception.handler;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.example.get_learning_server.exception.ExceptionResponse;
+import com.example.get_learning_server.exception.NoPostFoundException;
 import jakarta.validation.ValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -96,6 +97,17 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
         request.getDescription(false),
         HttpStatus.INTERNAL_SERVER_ERROR);
     return new ResponseEntity<>(exceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
+  @ExceptionHandler(NoPostFoundException.class)
+  private ResponseEntity<ExceptionResponse> handleJwtCreationException(
+      Exception ex, WebRequest request) {
+
+    ExceptionResponse exceptionResponse = new ExceptionResponse(
+        ex.toString(),
+        request.getDescription(false),
+        HttpStatus.BAD_REQUEST);
+    return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(Exception.class)

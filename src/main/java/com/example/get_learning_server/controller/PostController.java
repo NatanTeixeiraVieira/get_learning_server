@@ -1,8 +1,8 @@
 package com.example.get_learning_server.controller;
 
 import com.example.get_learning_server.dto.response.getAllPosts.Posts;
+import com.example.get_learning_server.dto.response.getPostById.GetPostByIdResponseDTO;
 import com.example.get_learning_server.dto.response.savePost.SavePostResponseDTO;
-import com.example.get_learning_server.entity.Post;
 import com.example.get_learning_server.service.post.PostServiceImpl;
 import com.example.get_learning_server.util.MediaType;
 import lombok.RequiredArgsConstructor;
@@ -58,7 +58,8 @@ public class PostController {
     return ResponseEntity.ok(postService.findAllPosts(pageable));
   }
 
-  public Post findPostById(UUID id) {
-    return null;
+  @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON)
+  public ResponseEntity<GetPostByIdResponseDTO> findPostById(@PathVariable("id") UUID postId) {
+    return ResponseEntity.ok(postService.findPostById(postId));
   }
 }

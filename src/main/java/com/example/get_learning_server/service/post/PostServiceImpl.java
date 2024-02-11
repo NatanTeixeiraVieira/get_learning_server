@@ -3,8 +3,10 @@ package com.example.get_learning_server.service.post;
 import com.example.get_learning_server.controller.PostController;
 import com.example.get_learning_server.dto.request.savePost.SavePostRequestDTO;
 import com.example.get_learning_server.dto.response.getAllPosts.Posts;
+import com.example.get_learning_server.dto.response.getPostById.GetPostByIdResponseDTO;
 import com.example.get_learning_server.dto.response.savePost.SavePostResponseDTO;
 import com.example.get_learning_server.entity.*;
+import com.example.get_learning_server.exception.NoPostFoundException;
 import com.example.get_learning_server.repository.*;
 import com.example.get_learning_server.util.MethodsUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,6 +20,7 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +31,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -65,6 +69,18 @@ public class PostServiceImpl implements PostService {
     ).withSelfRel();
 
     return assembler.toModel(postsPageDTO, link);
+  }
+
+  @Override
+  public GetPostByIdResponseDTO findPostById(UUID postId) {
+    final Post post = postRepository
+        .findById(postId)
+        .orElseThrow(() -> new NoPostFoundException("No post found for id: " + postId));
+    final GetPostByIdResponseDTO postDto = mapper.map(post, GetPostByIdResponseDTO.class);
+    postDto.add(
+        linkTo(methodOn(PostController.class).findAllPosts(0, 12, "asc")).withRel("postsList")
+    );
+    return postDto;
   }
 
   @Override
