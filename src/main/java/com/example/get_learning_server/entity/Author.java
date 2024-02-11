@@ -33,6 +33,6 @@ public class Author extends Auditable implements Serializable {
   private User user;
 
   @OneToOne
-  @JoinColumn(name = "user_image_id")
-  private UserImage userImage;
+  @JoinColumn(name = "author_image_id")
+  private AuthorImage authorImage;
 }

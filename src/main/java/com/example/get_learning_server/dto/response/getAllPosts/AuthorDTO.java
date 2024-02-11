@@ -1,7 +1,6 @@
 package com.example.get_learning_server.dto.response.getAllPosts;
 
-import com.example.get_learning_server.entity.UserImage;
-import jakarta.annotation.Nullable;
+import com.example.get_learning_server.entity.AuthorImage;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -25,5 +24,5 @@ public class AuthorDTO implements Serializable {
 
   private String slug;
 
-  private UserImage userImageId;
+  private AuthorImage userImageId;
 }

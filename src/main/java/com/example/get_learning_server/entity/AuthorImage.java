@@ -11,12 +11,12 @@ import java.io.Serializable;
 import java.util.UUID;
 
 @Entity
-@Table(name = "user_image")
+@Table(name = "author_image")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class UserImage extends Auditable implements Serializable {
+public class AuthorImage extends Auditable implements Serializable {
   @Serial
   private static final long serialVersionUID = 1L;
 
