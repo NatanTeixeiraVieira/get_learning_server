@@ -180,7 +180,6 @@ public class PostServiceImpl implements PostService {
           final Tag newTag = tagRepository.findById(tag.getId()).get();
           newTag.setName(tag.getName());
           newTag.setSlug(MethodsUtil.generateSlug(tag.getName()));
-          tagRepository.save(newTag);
           return newTag;
         })
         .toList();
@@ -199,6 +198,14 @@ public class PostServiceImpl implements PostService {
         .add(linkTo(methodOn(PostController.class).findPostById(updatePostResponseDTO.getId())).withSelfRel());
 
     return updatePostResponseDTO;
+  }
+
+  public void deletePost(UUID postId) {
+    final Post post = postRepository
+        .findById(postId)
+        .orElseThrow(() -> new NoPostFoundException("No post found for this id"));
+
+    postRepository.delete(post);
   }
 
   private BlobInfo uploadCoverImage(MultipartFile coverImageFile) throws IOException {

@@ -38,21 +38,17 @@ public class Post extends Auditable implements Serializable {
   @JoinColumn(name = "author_id")
   private Author author;
 
-  @OneToOne
+  @OneToOne(cascade = CascadeType.REMOVE)
   @JoinColumn(name = "cover_image_id")
   private CoverImage coverImage;
 
-  @ManyToMany(fetch = FetchType.EAGER
-//    ,cascade = CascadeType.ALL
-  )
+  @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(name = "post_category",
       joinColumns = {@JoinColumn(name = "post_id")},
       inverseJoinColumns = {@JoinColumn(name = "category_id")})
   private List<Category> categories;
 
-  @ManyToMany(fetch = FetchType.EAGER
-//      , cascade = {CascadeType.PERSIST, CascadeType.MERGE}
-  )
+  @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.REMOVE, CascadeType.MERGE})
   @JoinTable(name = "post_tag",
       joinColumns = {@JoinColumn(name = "post_id")},
       inverseJoinColumns = {@JoinColumn(name = "tag_id")})

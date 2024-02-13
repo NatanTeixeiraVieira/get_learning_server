@@ -59,4 +59,10 @@ public class PostController {
   ) throws IOException {
     return ResponseEntity.ok(postService.updatePost(coverImage, dto));
   }
+
+  @DeleteMapping(value = "/{id}")
+  public ResponseEntity<?> deletePost(@PathVariable UUID id) {
+    postService.deletePost(id);
+    return ResponseEntity.noContent().build();
+  }
 }
