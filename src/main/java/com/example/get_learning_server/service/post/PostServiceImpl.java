@@ -2,25 +2,30 @@ package com.example.get_learning_server.service.post;
 
 import com.example.get_learning_server.controller.PostController;
 import com.example.get_learning_server.dto.request.savePost.SavePostRequestDTO;
+import com.example.get_learning_server.dto.request.updatePost.UpdatePostRequestDTO;
 import com.example.get_learning_server.dto.response.getAllPosts.Posts;
 import com.example.get_learning_server.dto.response.getPostById.GetPostByIdResponseDTO;
 import com.example.get_learning_server.dto.response.savePost.SavePostResponseDTO;
+import com.example.get_learning_server.dto.response.updatePost.UpdatePostResponseDTO;
 import com.example.get_learning_server.entity.*;
+import com.example.get_learning_server.exception.NoPermissionException;
 import com.example.get_learning_server.exception.NoPostFoundException;
 import com.example.get_learning_server.repository.*;
+import com.example.get_learning_server.util.Constants;
 import com.example.get_learning_server.util.MethodsUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.*;
 import com.google.firebase.cloud.StorageClient;
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,6 +36,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -49,6 +55,7 @@ public class PostServiceImpl implements PostService {
   private final TagRepository tagRepository;
   private final ModelMapper mapper;
   private final ObjectMapper objectMapper;
+  private final Environment environment;
   @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
   private final PagedResourcesAssembler<Posts> assembler;
 
@@ -84,42 +91,14 @@ public class PostServiceImpl implements PostService {
   }
 
   @Override
-  public SavePostResponseDTO savePost(
-      MultipartFile coverImageFile,
-      String title,
-      String subtitle,
-      String content,
-      String allowComments,
-      String categories,
-      String tags) throws IOException {
+  public SavePostResponseDTO savePost(MultipartFile coverImageFile, String dto) throws IOException {
     logger.info("saving one post");
 
-    final ArrayList<String> categoriesList = objectMapper.readValue(categories, ArrayList.class);
-    final ArrayList<String> tagsList = objectMapper.readValue(tags, ArrayList.class);
-
-    final SavePostRequestDTO postData = new SavePostRequestDTO(
-        title,
-        subtitle,
-        content,
-        allowComments.equals("true"),
-        categoriesList,
-        tagsList
-    );
+    final SavePostRequestDTO postData = objectMapper.readValue(dto, SavePostRequestDTO.class);
 
     final User loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-    // Create a temporary file in server
-    Path tempFile = Files.createTempFile("temp", coverImageFile.getOriginalFilename());
-    Files.copy(coverImageFile.getInputStream(), tempFile, StandardCopyOption.REPLACE_EXISTING);
-
-    // Upload image
-    final BlobInfo blobInfo = StorageClient
-        .getInstance()
-        .bucket()
-        .create("coverImage/" + coverImageFile.getOriginalFilename(), Files.readAllBytes(tempFile));
-
-    // Remove temporary file
-    Files.deleteIfExists(tempFile);
+    final BlobInfo blobInfo = uploadCoverImage(coverImageFile);
 
     final CoverImage coverImage = new CoverImage();
     coverImage.setName(blobInfo.getName());
@@ -155,5 +134,79 @@ public class PostServiceImpl implements PostService {
         .add(linkTo(methodOn(PostController.class).findPostById(savePostResponseDTO.getId())).withSelfRel());
 
     return savePostResponseDTO;
+  }
+
+  @Override
+  public UpdatePostResponseDTO updatePost(@Nullable MultipartFile coverImageFile, String dto) throws IOException {
+    logger.info("Updating one post");
+
+    final UpdatePostRequestDTO postData = objectMapper.readValue(dto, UpdatePostRequestDTO.class);
+    final Post post = postRepository
+        .findById(postData.getId())
+        .orElseThrow(() -> new NoPostFoundException("Invalid data"));
+
+    final User loggedUser = MethodsUtil.getLoggedUser();
+
+    final Author loggedAuthor = authorRepository.findByUser(loggedUser).get();
+
+    if(!loggedAuthor.getId().equals(post.getAuthor().getId()))
+      throw new NoPermissionException("You don't have permission to execute this action");
+
+    if(coverImageFile != null && postData.getCoverImageId() != null) {
+      final CoverImage coverImage = coverImageRepository.findById(postData.getCoverImageId()).get();
+      final BlobInfo blobInfo = uploadCoverImage(coverImageFile);
+
+      // Delete previous image from FireStorage
+      Blob blobToDelete = StorageClient.getInstance().bucket().get(coverImage.getName());
+      blobToDelete.delete();
+
+      coverImage.setName(blobInfo.getName());
+      coverImage.setUrl(blobInfo.getMediaLink());
+
+      final CoverImage savedCoverImage = coverImageRepository.save(coverImage);
+      post.setCoverImage(savedCoverImage);
+    }
+
+    final List<Category> postCategoriesList = postData
+        .getCategories()
+        .stream()
+        .map(categoryRepository::findByName)
+        .toList();
+
+    final List<Tag> postTagsList = postData
+        .getTags()
+        .stream()
+        .map(tag -> {
+          final Tag newTag = tagRepository.findById(tag.getId()).get();
+          newTag.setName(tag.getName());
+          newTag.setSlug(MethodsUtil.generateSlug(tag.getName()));
+          tagRepository.save(newTag);
+          return newTag;
+        })
+        .toList();
+
+    post.setAllowComments(postData.getAllowComments());
+    post.setTitle(postData.getTitle());
+    post.setSubtitle(postData.getSubtitle());
+    post.setContent(postData.getContent());
+    post.setCategories(postCategoriesList);
+    post.setTags(postTagsList);
+
+    final Post postUpdated = postRepository.save(post);
+
+    final UpdatePostResponseDTO updatePostResponseDTO = mapper.map(postUpdated, UpdatePostResponseDTO.class);
+    updatePostResponseDTO
+        .add(linkTo(methodOn(PostController.class).findPostById(updatePostResponseDTO.getId())).withSelfRel());
+
+    return updatePostResponseDTO;
+  }
+
+  private BlobInfo uploadCoverImage(MultipartFile coverImageFile) throws IOException {
+    final String coverImagePath = Constants.coverImageBasePath + UUID.randomUUID();
+
+    return StorageClient
+        .getInstance()
+        .bucket()
+        .create(coverImagePath, coverImageFile.getInputStream(), coverImageFile.getContentType());
   }
 }

@@ -3,6 +3,8 @@ package com.example.get_learning_server.service.post;
 import com.example.get_learning_server.dto.response.getAllPosts.Posts;
 import com.example.get_learning_server.dto.response.getPostById.GetPostByIdResponseDTO;
 import com.example.get_learning_server.dto.response.savePost.SavePostResponseDTO;
+import com.example.get_learning_server.dto.response.updatePost.UpdatePostResponseDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
@@ -16,11 +18,7 @@ public interface PostService {
 
   GetPostByIdResponseDTO findPostById(UUID postId);
 
-  SavePostResponseDTO savePost(MultipartFile coverImageFile,
-                               String title,
-                               String subtitle,
-                               String content,
-                               String allowComments,
-                               String categories,
-                               String tags) throws IOException;
+  SavePostResponseDTO savePost(MultipartFile coverImageFile, String dto) throws IOException;
+
+  UpdatePostResponseDTO updatePost(MultipartFile coverImageFile, String dto) throws IOException;
 }

@@ -1,5 +1,8 @@
 package com.example.get_learning_server.util;
 
+import com.example.get_learning_server.entity.User;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import java.text.Normalizer;
 import java.util.regex.Pattern;
 
@@ -22,5 +25,9 @@ public class MethodsUtil {
           Atenciosamente, <br>
           Equipe GetLearning.
         """.formatted(userName, confirmationLink, confirmationLink);
+  }
+
+  public static User getLoggedUser() {
+    return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
   }
 }

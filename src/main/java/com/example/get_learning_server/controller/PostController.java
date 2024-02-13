@@ -3,8 +3,10 @@ package com.example.get_learning_server.controller;
 import com.example.get_learning_server.dto.response.getAllPosts.Posts;
 import com.example.get_learning_server.dto.response.getPostById.GetPostByIdResponseDTO;
 import com.example.get_learning_server.dto.response.savePost.SavePostResponseDTO;
+import com.example.get_learning_server.dto.response.updatePost.UpdatePostResponseDTO;
 import com.example.get_learning_server.service.post.PostServiceImpl;
 import com.example.get_learning_server.util.MediaType;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,27 +27,6 @@ import java.util.UUID;
 public class PostController {
   private final PostServiceImpl postService;
 
-  @PostMapping(produces = MediaType.APPLICATION_JSON)
-  public ResponseEntity<SavePostResponseDTO> savePost(
-      @RequestParam(name = "coverImageFile") MultipartFile coverImageFile,
-      @RequestParam(name = "title") String title,
-      @RequestParam(name = "subtitle") String subtitle,
-      @RequestParam(name = "content") String content,
-      @RequestParam(name = "allowComments") String allowComments,
-      @RequestParam(name = "categories") String categories,
-      @RequestParam(name = "tags") String tags
-  ) throws IOException {
-    return ResponseEntity.status(HttpStatus.CREATED).body(postService.savePost(
-        coverImageFile,
-        title,
-        subtitle,
-        content,
-        allowComments,
-        categories,
-        tags
-    ));
-  }
-
   @GetMapping(produces = MediaType.APPLICATION_JSON)
   public ResponseEntity<PagedModel<EntityModel<Posts>>> findAllPosts(
       @RequestParam(value = "page", defaultValue = "0") Integer page,
@@ -61,5 +42,21 @@ public class PostController {
   @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON)
   public ResponseEntity<GetPostByIdResponseDTO> findPostById(@PathVariable("id") UUID postId) {
     return ResponseEntity.ok(postService.findPostById(postId));
+  }
+
+  @PostMapping(produces = MediaType.APPLICATION_JSON)
+  public ResponseEntity<SavePostResponseDTO> savePost(
+      @RequestParam(name = "coverImageFile") MultipartFile coverImageFile,
+      @RequestParam(name = "dto") String dto
+  ) throws IOException {
+    return ResponseEntity.status(HttpStatus.CREATED).body(postService.savePost(coverImageFile, dto));
+  }
+
+  @PutMapping(produces = MediaType.APPLICATION_JSON)
+  public ResponseEntity<UpdatePostResponseDTO> updatePost(
+      @Nullable @RequestParam(value = "coverImage") MultipartFile coverImage,
+      @RequestParam(value = "dto") String dto
+  ) throws IOException {
+    return ResponseEntity.ok(postService.updatePost(coverImage, dto));
   }
 }

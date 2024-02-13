@@ -20,6 +20,7 @@ public class FirebaseConfig {
   @Bean
   public FirebaseApp initFirebase() throws IOException {
     final String firebaseCredentials = environment.getProperty("FIREBASE_CREDENTIALS");
+    final String storageBucket = environment.getProperty("FIREBASE_STORAGE_BUCKET");
 
     assert firebaseCredentials != null;
     FirebaseOptions firebaseOptions = FirebaseOptions
@@ -29,7 +30,7 @@ public class FirebaseConfig {
                 new ByteArrayInputStream(firebaseCredentials.getBytes(StandardCharsets.UTF_8))
             )
         )
-        .setStorageBucket("getlearning-3b231.appspot.com")
+        .setStorageBucket(storageBucket)
         .build();
 
     return FirebaseApp.getApps().isEmpty() ? FirebaseApp.initializeApp(firebaseOptions) : FirebaseApp.getInstance();

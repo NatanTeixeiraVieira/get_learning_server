@@ -3,6 +3,7 @@ package com.example.get_learning_server.exception.handler;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.example.get_learning_server.exception.ExceptionResponse;
+import com.example.get_learning_server.exception.NoPermissionException;
 import com.example.get_learning_server.exception.NoPostFoundException;
 import jakarta.validation.ValidationException;
 import org.springframework.http.HttpStatus;
@@ -100,7 +101,7 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
   }
 
   @ExceptionHandler(NoPostFoundException.class)
-  private ResponseEntity<ExceptionResponse> handleJwtCreationException(
+  private ResponseEntity<ExceptionResponse> handlePostNotFoundException(
       Exception ex, WebRequest request) {
 
     ExceptionResponse exceptionResponse = new ExceptionResponse(
@@ -108,6 +109,17 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
         request.getDescription(false),
         HttpStatus.BAD_REQUEST);
     return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(NoPermissionException.class)
+  private ResponseEntity<ExceptionResponse> handleNoPermissionException(
+      Exception ex, WebRequest request) {
+
+    ExceptionResponse exceptionResponse = new ExceptionResponse(
+        ex.toString(),
+        request.getDescription(false),
+        HttpStatus.BAD_REQUEST);
+    return new ResponseEntity<>(exceptionResponse, HttpStatus.FORBIDDEN);
   }
 
   @ExceptionHandler(Exception.class)

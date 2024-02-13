@@ -42,13 +42,17 @@ public class Post extends Auditable implements Serializable {
   @JoinColumn(name = "cover_image_id")
   private CoverImage coverImage;
 
-  @ManyToMany(fetch = FetchType.EAGER)
+  @ManyToMany(fetch = FetchType.EAGER
+//    ,cascade = CascadeType.ALL
+  )
   @JoinTable(name = "post_category",
       joinColumns = {@JoinColumn(name = "post_id")},
       inverseJoinColumns = {@JoinColumn(name = "category_id")})
   private List<Category> categories;
 
-  @ManyToMany(fetch = FetchType.EAGER)
+  @ManyToMany(fetch = FetchType.EAGER
+//      , cascade = {CascadeType.PERSIST, CascadeType.MERGE}
+  )
   @JoinTable(name = "post_tag",
       joinColumns = {@JoinColumn(name = "post_id")},
       inverseJoinColumns = {@JoinColumn(name = "tag_id")})
