@@ -22,11 +22,17 @@
         <java-jwt.version>4.4.0</java-jwt.version>
         <mockito-inline.version>5.1.1</mockito-inline.version>
         <firebase.version>9.2.0</firebase.version>
+        <jackson.version>2.15.1</jackson.version>
     </properties>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>

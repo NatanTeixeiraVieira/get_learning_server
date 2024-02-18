@@ -11,6 +11,7 @@ import com.example.get_learning_server.entity.*;
 import com.example.get_learning_server.exception.NoPermissionException;
 import com.example.get_learning_server.exception.NoPostFoundException;
 import com.example.get_learning_server.repository.*;
+import com.example.get_learning_server.service.image.ImageServiceImpl;
 import com.example.get_learning_server.util.Constants;
 import com.example.get_learning_server.util.MethodsUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,7 +20,6 @@ import com.google.firebase.cloud.StorageClient;
 import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -31,9 +31,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +52,7 @@ public class PostServiceImpl implements PostService {
   private final TagRepository tagRepository;
   private final ModelMapper mapper;
   private final ObjectMapper objectMapper;
-  private final Environment environment;
+  private final ImageServiceImpl imageService;
   @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
   private final PagedResourcesAssembler<Posts> assembler;
 
@@ -98,7 +95,7 @@ public class PostServiceImpl implements PostService {
 
     final User loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-    final BlobInfo blobInfo = uploadCoverImage(coverImageFile);
+    final BlobInfo blobInfo = imageService.uploadImage(coverImageFile, Constants.coverImageBasePath);
 
     final CoverImage coverImage = new CoverImage();
     coverImage.setName(blobInfo.getName());
@@ -154,7 +151,7 @@ public class PostServiceImpl implements PostService {
 
     if(coverImageFile != null && postData.getCoverImageId() != null) {
       final CoverImage coverImage = coverImageRepository.findById(postData.getCoverImageId()).get();
-      final BlobInfo blobInfo = uploadCoverImage(coverImageFile);
+      final BlobInfo blobInfo = imageService.uploadImage(coverImageFile, Constants.coverImageBasePath);
 
       // Delete previous image from FireStorage
       Blob blobToDelete = StorageClient.getInstance().bucket().get(coverImage.getName());
@@ -200,6 +197,7 @@ public class PostServiceImpl implements PostService {
     return updatePostResponseDTO;
   }
 
+  @Override
   public void deletePost(UUID postId) {
     final Post post = postRepository
         .findById(postId)
@@ -208,12 +206,5 @@ public class PostServiceImpl implements PostService {
     postRepository.delete(post);
   }
 
-  private BlobInfo uploadCoverImage(MultipartFile coverImageFile) throws IOException {
-    final String coverImagePath = Constants.coverImageBasePath + UUID.randomUUID();
 
-    return StorageClient
-        .getInstance()
-        .bucket()
-        .create(coverImagePath, coverImageFile.getInputStream(), coverImageFile.getContentType());
-  }
 }

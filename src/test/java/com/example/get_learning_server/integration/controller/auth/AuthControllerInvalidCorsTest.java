@@ -36,7 +36,6 @@ public class AuthControllerInvalidCorsTest extends AbstractIntegrationTest {
   @Test
   @Order(1)
   public void registerSendEmailTest() {
-
     doNothing().when(emailSender).send(any(MimeMessage.class));
     when(emailSender.createMimeMessage()).thenReturn(new MimeMessage((Session) null));
 

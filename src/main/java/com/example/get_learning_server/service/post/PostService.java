@@ -21,4 +21,6 @@ public interface PostService {
   SavePostResponseDTO savePost(MultipartFile coverImageFile, String dto) throws IOException;
 
   UpdatePostResponseDTO updatePost(MultipartFile coverImageFile, String dto) throws IOException;
+
+  void deletePost(UUID postId);
 }
