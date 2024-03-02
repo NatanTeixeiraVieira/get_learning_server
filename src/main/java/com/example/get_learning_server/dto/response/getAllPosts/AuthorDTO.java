@@ -24,5 +24,8 @@ public class AuthorDTO implements Serializable {
 
   private String slug;
 
+  private String description;
+
   private AuthorImage userImageId;
+
 }

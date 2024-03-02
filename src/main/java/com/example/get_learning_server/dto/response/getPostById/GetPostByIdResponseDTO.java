@@ -48,6 +48,7 @@ public class GetPostByIdResponseDTO extends RepresentationModel<GetPostByIdRespo
     private UUID id;
     private String name;
     private String slug;
+    private String description;
     private AuthorImageDTO authorImage;
 
     @NoArgsConstructor

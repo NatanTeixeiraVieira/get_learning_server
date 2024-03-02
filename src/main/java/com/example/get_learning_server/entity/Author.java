@@ -28,6 +28,8 @@ public class Author extends Auditable implements Serializable {
 
   private String slug;
 
+  private String description;
+
   @OneToOne
   @JoinColumn(name = "user_id")
   private User user;
