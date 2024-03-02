@@ -34,10 +34,8 @@ public class SecurityConfig {
             authorizeHttpRequests -> authorizeHttpRequests
                 .requestMatchers(HttpMethod.POST, "/api/auth/v1/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-//                .requestMatchers(HttpMethod.POST, "/api/auth/v1/login").permitAll()
-//                .requestMatchers("/api/**").hasAnyRole("USER", "ADMIN", "SUPER_ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/post/v1/**").permitAll()
                 .requestMatchers("/api/**").authenticated()
-//                .anyRequest().hasRole("USER")
                 .requestMatchers("/users").denyAll()
         )
         .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class)

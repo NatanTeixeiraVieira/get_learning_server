@@ -11,6 +11,7 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.UUID;
 
 public interface PostService {
@@ -18,7 +19,7 @@ public interface PostService {
 
   GetPostByIdResponseDTO findPostById(UUID postId);
 
-  SavePostResponseDTO savePost(MultipartFile coverImageFile, String dto) throws IOException;
+  SavePostResponseDTO savePost(MultipartFile coverImageFile, String dto) throws IOException, URISyntaxException;
 
   UpdatePostResponseDTO updatePost(MultipartFile coverImageFile, String dto) throws IOException;
 

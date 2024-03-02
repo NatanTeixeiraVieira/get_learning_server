@@ -31,6 +31,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -88,7 +90,7 @@ public class PostServiceImpl implements PostService {
   }
 
   @Override
-  public SavePostResponseDTO savePost(MultipartFile coverImageFile, String dto) throws IOException {
+  public SavePostResponseDTO savePost(MultipartFile coverImageFile, String dto) throws IOException, URISyntaxException {
     logger.info("saving one post");
 
     final SavePostRequestDTO postData = objectMapper.readValue(dto, SavePostRequestDTO.class);
@@ -96,10 +98,11 @@ public class PostServiceImpl implements PostService {
     final User loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
     final BlobInfo blobInfo = imageService.uploadImage(coverImageFile, Constants.coverImageBasePath);
+    final String imageLink = generateImageLink(blobInfo.getMediaLink());
 
     final CoverImage coverImage = new CoverImage();
     coverImage.setName(blobInfo.getName());
-    coverImage.setUrl(blobInfo.getMediaLink());
+    coverImage.setUrl(imageLink);
 
     final CoverImage savedCoverImage = coverImageRepository.save(coverImage);
 
@@ -206,5 +209,11 @@ public class PostServiceImpl implements PostService {
     postRepository.delete(post);
   }
 
-
+  private String generateImageLink(String mediaLink) throws URISyntaxException {
+    URI uri = new URI(mediaLink);
+    String path = uri.getPath();
+    String[] segments = path.split("/");
+    String filename = segments[segments.length - 1];
+    return "https://firebasestorage.googleapis.com/v0/b/getlearning-3b231.appspot.com/o/coverImage%2F" + filename + "?alt=media";
+  }
 }

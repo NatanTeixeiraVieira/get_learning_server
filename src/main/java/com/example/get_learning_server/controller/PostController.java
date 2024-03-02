@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.UUID;
 
 @RestController
@@ -114,7 +115,7 @@ public class PostController {
   public ResponseEntity<SavePostResponseDTO> savePost(
       @RequestParam(name = "coverImageFile") MultipartFile coverImageFile,
       @RequestParam(name = "dto") String dto
-  ) throws IOException {
+  ) throws IOException, URISyntaxException {
     return ResponseEntity.status(HttpStatus.CREATED).body(postService.savePost(coverImageFile, dto));
   }
 

@@ -14,7 +14,7 @@ public class ExceptionResponse implements Serializable {
 
     private Date timestamp;
     private Boolean success;
-    private String message;
+    private String data;
     private int statusCode;
     private String status;
     private String description;
@@ -24,7 +24,7 @@ public class ExceptionResponse implements Serializable {
         success = false;
         statusCode = httpStatus.value();
         status = httpStatus.getReasonPhrase();
-        this.message = message;
+        this.data = message;
         this.description = description;
     }
 }
